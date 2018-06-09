@@ -1,10 +1,3 @@
-// Step 1: overcome the 1MB limit using ArrayBuffers:
-// FileReader.readAsArrayBuffer(file)
-// Step 2: change CryptoJS to openpgpjs
-
-
-//var openpgp = require('openpgp'); // use as CommonJS, AMD, ES6 module or via window.openpgp
-//openpgp.initWorker({ path:'openpgp.worker.js' }) // set the relative web worker path
 
 // put keys in backtick (``) to avoid errors caused by spaces or tabs
 const pubkey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
