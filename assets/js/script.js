@@ -32,29 +32,23 @@ niN087uCHMxKfWZ45VnqAqbkWqNj6exA8HKqrQAx1d70h74RQz+iKoNfHT64yOOI
 -----END PGP PUBLIC KEY BLOCK-----`;
 
 $(function(){
-
-	var body = $('body'),
-		stage = $('#stage'),
-		back = $('a.back');
+	var body = $('body');
+	var stage = $('#stage');
+	var back = $('a.back');
 
 	/* Step 1 */
-
 	$('#step1 .encrypt').click(function(){
 		body.attr('class', 'encrypt');
 
 		// Go to step 2
 		step(2);
 	});
-
 	$('#step1 .decrypt').click(function(){
 		body.attr('class', 'decrypt');
 		step(2);
 	});
 
-
 	/* Step 2 */
-
-
 	$('#step2 .button').click(function(){
 		// Trigger the file browser dialog
 		$(this).parent().find('input').click();
@@ -62,20 +56,15 @@ $(function(){
 
 
 	// Set up events for the file inputs
-
 	var file = null;
 
 	$('#step2').on('change', '#encrypt-input', function(e){
-
 		// Has a file been selected?
-
 		if(e.target.files.length!=1){
 			alert('Please select a file to encrypt!');
 			return false;
 		}
-
 		file = e.target.files[0];
-
 		//if(file.size > 1024*1024){
 		//	alert('Please choose files smaller than 1mb, otherwise you may crash your browser. \nThis is a known issue. See the tutorial.');
 		//	return;
@@ -85,28 +74,22 @@ $(function(){
 	});
 
 	$('#step2').on('change', '#decrypt-input', function(e){
-
 		if(e.target.files.length!=1){
 			alert('Please select a file to decrypt!');
 			return false;
 		}
-
 		file = e.target.files[0];
 		step(3);
 	});
 
 
 	/* Step 3 */
-
-
 	$('a.button.process').click(function(){
-
 		var input = $(this).parent().find('input[type=password]'),
 			a = $('#step4 a.download'),
 			password = input.val();
 
 		input.val('');
-
 		if(password.length<5){
 			alert('Please choose a longer password!');
 			return;
@@ -116,15 +99,11 @@ $(function(){
 		// contents of the	selected file.
 
 		var reader = new FileReader();
-
 		if(body.hasClass('encrypt')){
-
 			// Encrypt the file!
-
 			reader.onload = function(e){
 
 				//var encrypted = CryptoJS.AES.encrypt(e.target.result, password);
-				console.log(e);
 				var fileToEncrypt =  new Uint8Array(e.target.result);
 				const options = {
 					data: fileToEncrypt,
@@ -150,13 +129,9 @@ $(function(){
 			reader.readAsArrayBuffer(file);
 		}
 		else {
-
 			// Decrypt it!
-
 			reader.onload = function(e){
-
-				var decrypted = CryptoJS.AES.decrypt(e.target.result, password)
-										.toString(CryptoJS.enc.Latin1);
+				var decrypted = CryptoJS.AES.decrypt(e.target.result, password).toString(CryptoJS.enc.Latin1);
 
 				if(!/^data:/.test(decrypted)){
 					alert("Invalid pass phrase or file! Please try again.");
@@ -168,21 +143,16 @@ $(function(){
 
 				step(4);
 			};
-
 			reader.readAsText(file);
 		}
 	});
 
 
 	/* The back button */
-
-
 	back.click(function(){
-
 		// Reinitialize the hidden file inputs,
 		// so that they don't hold the selection 
 		// from last time
-
 		$('#step2 input[type=file]').replaceWith(function(){
 			return $(this).clone();
 		});
@@ -192,9 +162,7 @@ $(function(){
 
 
 	// Helper function that moves the viewport to the correct step div
-
 	function step(i){
-
 		if(i == 1){
 			back.fadeOut();
 		}
@@ -208,5 +176,4 @@ $(function(){
 
 		stage.css('top',(-(i-1)*100)+'%');
 	}
-
 });

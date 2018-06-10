@@ -67,7 +67,8 @@ body{
 	font-size:48px;
 	text-align:center;
 	color:#fff;
-	margin-bottom:60px;
+	margin-bottom:40px;
+	margin-top:50px;
 }
 
 #stage h2{
@@ -82,7 +83,7 @@ body{
 	position:absolute;
 	text-align:center;
 	left:0;
-	top:50%;
+	top:0%;
 	width:100%;
 }
 
@@ -96,7 +97,7 @@ a.back{
 	background: url('../img/icons.svg') no-repeat -192px 0;
 	position: absolute;
 	cursor: pointer;
-	top: 50px;
+	top: 5px;
 	left: 50%;
 	z-index: 10;
 	opacity: 0.8;
@@ -140,14 +141,15 @@ body.decrypt .if-decrypt{
 	color:#fff !important;
 	text-transform: uppercase;
 	font-weight: bold;
-	border-radius:1px;
-	display:block;
+	border-radius:3px;
+	display:inline-block;
+	vertical-align: middle;
 	line-height:70px;
 	box-shadow:3px 3px 0 rgba(0,0,0,0.08);
 	cursor: pointer;
 	font-size:18px;
 	margin:10px auto;
-	opacity:0.9;
+	opacity:0.8;
 }
 
 .button:hover{
@@ -243,9 +245,10 @@ body.decrypt #step2{
 	line-height: 1;
 	font: inherit;
 	display: inline-block;
+	vertical-align: middle;
 	outline: none;
 	width: 400px;
-	margin-bottom: 18px;
+	/*margin-bottom: 18px;*/
 	border-radius: 2px;
 	box-shadow: 3px 3px 0 rgba(0,0,0,0.05);
 	font-size: 36px;
@@ -256,11 +259,11 @@ body.decrypt #step2{
 	background-color:#aa8cd8;
 }
 
-#step1 .content{	margin-top: -140px;}
+/*#step1 .content{	margin-top: -140px;}
 #step2 .content{	margin-top:-110px;}
 #step3 .content{	margin-top: -157px;}
 #step4 .content{	margin-top: -100px;}
-
+*/
 
 /*----------------------------
 	The Demo Footer
