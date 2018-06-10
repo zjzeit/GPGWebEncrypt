@@ -15,26 +15,19 @@
 			<div id="step1">
 				<div class="content">
 					<h1>What do you want to do?</h1>
-					<a class="button encrypt green">Encrypt via GPG</a>
-					<a class="button encrypt green">Encrypt via AES</a><br/>
-					<a class="button decrypt magenta">Decrypt via GPG</a>
-					<a class="button decrypt magenta">Decrypt via AES</a>
+					<a class="button encrypt gpg green">Encrypt via GPG</a>
+					<a class="button encrypt aes green">Encrypt via AES</a><br/>
+					<a class="button decrypt gpg magenta">Decrypt via GPG</a>
+					<a class="button decrypt aes magenta">Decrypt via AES</a>
 				</div>
 			</div>
 			<div id="step2">
 				<div class="content if-encrypt">
-					<h1>Choose which file to encrypt</h1>
+					<h1>Choose a file</h1>
 					<h2>An encrypted copy of the file will be generated. No data is sent to our server.</h2>
 					<a class="button browse blue">Browse</a>
 
-					<input type="file" id="encrypt-input" />
-				</div>
-				<div class="content if-decrypt">
-					<h1>Choose which file to decrypt</h1>
-					<h2>Only files encrypted by this tool are accepted.</h2>
-					<a class="button browse blue">Browse</a>
-
-					<input type="file" id="decrypt-input" />
+					<input type="file" id="file-input" />
 				</div>
 			</div>
 			<div id="step3">

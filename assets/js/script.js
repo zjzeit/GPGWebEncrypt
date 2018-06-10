@@ -36,54 +36,49 @@ $(function(){
 	var stage = $('#stage');
 	var back = $('a.back');
 
-	/* Step 1 */
-	$('#step1 .encrypt').click(function(){
+	/* Step 1: Determine User Action */
+	$('#step1 .encrypt.gpg').click(function(){
 		body.attr('class', 'encrypt');
-
-		// Go to step 2
+		body.attr('class', 'gpg');
+		// Slide to step 2 div
 		step(2);
 	});
-	$('#step1 .decrypt').click(function(){
+	$('#step1 .encrypt.aes').click(function(){
+		body.attr('class', 'encrypt');
+		body.attr('class', 'aes');
+		step(2);
+	});
+	$('#step1 .decrypt.gpg').click(function(){
 		body.attr('class', 'decrypt');
+		body.attr('class', 'gpg');
+		step(2);
+	});
+	$('#step1 .decrypt.aes').click(function(){
+		body.attr('class', 'decrypt');
+		body.attr('class', 'aes');
 		step(2);
 	});
 
-	/* Step 2 */
+	/* Step 2: File Input */
 	$('#step2 .button').click(function(){
 		// Trigger the file browser dialog
 		$(this).parent().find('input').click();
 	});
 
-
 	// Set up events for the file inputs
 	var file = null;
 
-	$('#step2').on('change', '#encrypt-input', function(e){
+	$('#step2').on('change', '#file-input', function(e){
 		// Has a file been selected?
 		if(e.target.files.length!=1){
-			alert('Please select a file to encrypt!');
-			return false;
-		}
-		file = e.target.files[0];
-		//if(file.size > 1024*1024){
-		//	alert('Please choose files smaller than 1mb, otherwise you may crash your browser. \nThis is a known issue. See the tutorial.');
-		//	return;
-		//}
-
-		step(3);
-	});
-
-	$('#step2').on('change', '#decrypt-input', function(e){
-		if(e.target.files.length!=1){
-			alert('Please select a file to decrypt!');
+			alert('Please select a file!');
 			return false;
 		}
 		file = e.target.files[0];
 		step(3);
 	});
 
-
-	/* Step 3 */
+	/* Step 3: Get Password (if AES) */
 	$('a.button.process').click(function(){
 		var input = $(this).parent().find('input[type=password]'),
 			a = $('#step4 a.download'),
