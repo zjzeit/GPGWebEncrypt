@@ -1,4 +1,4 @@
-
+// https://tutorialzine.com/2013/11/javascript-file-encrypter
 // put keys in backtick (``) to avoid errors caused by spaces or tabs
 const pubkey = `-----BEGIN PGP PUBLIC KEY BLOCK-----
 
@@ -38,24 +38,20 @@ $(function(){
 
 	/* Step 1: Determine User Action */
 	$('#step1 .encrypt.gpg').click(function(){
-		body.attr('class', 'encrypt');
-		body.attr('class', 'gpg');
+		body.attr('class', 'encrypt gpg');
 		// Slide to step 2 div
 		step(2);
 	});
 	$('#step1 .encrypt.aes').click(function(){
-		body.attr('class', 'encrypt');
-		body.attr('class', 'aes');
+		body.attr('class', 'encrypt aes');
 		step(2);
 	});
 	$('#step1 .decrypt.gpg').click(function(){
-		body.attr('class', 'decrypt');
-		body.attr('class', 'gpg');
+		body.attr('class', 'decrypt gpg');
 		step(2);
 	});
 	$('#step1 .decrypt.aes').click(function(){
-		body.attr('class', 'decrypt');
-		body.attr('class', 'aes');
+		body.attr('class', 'decrypt aes');
 		step(2);
 	});
 
@@ -75,71 +71,126 @@ $(function(){
 			return false;
 		}
 		file = e.target.files[0];
+
+		// Set GPG key to default public key
+		if(body.hasClass('encrypt')){
+			$('#step3 textarea.public-key').val(pubkey);
+		}
 		step(3);
 	});
 
-	/* Step 3: Get Password (if AES) */
+	/* Step 3: Get Passphrase (AES) or Public Key (GPG)  */
 	$('a.button.process').click(function(){
-		var input = $(this).parent().find('input[type=password]'),
-			a = $('#step4 a.download'),
-			password = input.val();
-
-		input.val('');
-		if(password.length<5){
-			alert('Please choose a longer password!');
-			return;
-		}
-
-		// The HTML5 FileReader object will allow us to read the 
-		// contents of the	selected file.
-
+		// The HTML5 FileReader object reads the selected file.
 		var reader = new FileReader();
-		if(body.hasClass('encrypt')){
-			// Encrypt the file!
-			reader.onload = function(e){
+		
+		// AES
+		if(body.hasClass('aes')){
+			var input = $(this).parent().find('input[type=password]');
+			var a = $('#step4 a.download');
+			var password = input.val();
 
-				//var encrypted = CryptoJS.AES.encrypt(e.target.result, password);
-				var fileToEncrypt =  new Uint8Array(e.target.result);
-				const options = {
-					data: fileToEncrypt,
-					publicKeys: openpgp.key.readArmored(pubkey).keys,
-					armor: false // Don't ASCII-armor, just keep it as a binary blob
-				};
-				openpgp.encrypt(options).then(ciphertext => {
-					encrypted = ciphertext.message.packets.write(); //Uint8Array
+			input.val('');
+			if(password.length<5){
+				alert('Please choose a longer password!');
+				return;
+			}
+
+			// AES: Encrypt
+			if(body.hasClass('encrypt')){
+				reader.onload = function(e){
+					var encrypted = CryptoJS.AES.encrypt(e.target.result, password);
+					console.log(encrypted);
+					// TODO: make encrypted a uint8array
 					var blob = new Blob([encrypted], {type: "application/octet-binary;charset=utf-8"});
 					var url = URL.createObjectURL(blob);
 					a.attr('href', url);
 					a.attr('download', file.name + ".gpg");
-				});
-				// https://discourse.threejs.org/t/how-to-create-a-new-file-and-save-it-with-arraybuffer-content/628/3
+		// https://discourse.threejs.org/t/how-to-create-a-new-file-and-save-it-with-arraybuffer-content/628/3
+					step(4);
+				};
 
-				step(4);
-			};
+				reader.readAsArrayBuffer(file);
+			}
 
-			// This will encode the contents of the file into a data-uri.
-			// It will trigger the onload handler above, with the result
+			// AES: Decrypt
+			else {
+				reader.onload = function(e){
+					var decrypted = CryptoJS.AES.decrypt(e.target.result, password).toString(CryptoJS.enc.Latin1);
 
-			//reader.readAsDataURL(file);
-			reader.readAsArrayBuffer(file);
+					if(!/^data:/.test(decrypted)){
+						alert("Invalid pass phrase or file! Please try again.");
+						return false;
+					}
+
+					a.attr('href', decrypted);
+					a.attr('download', file.name.replace('.encrypted',''));
+
+					step(4);
+				};
+				reader.readAsText(file);
+			}
 		}
-		else {
-			// Decrypt it!
-			reader.onload = function(e){
-				var decrypted = CryptoJS.AES.decrypt(e.target.result, password).toString(CryptoJS.enc.Latin1);
-
-				if(!/^data:/.test(decrypted)){
-					alert("Invalid pass phrase or file! Please try again.");
-					return false;
+		// GPG
+		else if(body.hasClass('gpg')){
+			var a = $('#step4 a.download');
+			// GPG: Encrypt
+			if(body.hasClass('encrypt')){
+				var publicKey = $('#step3 textarea.public-key').val();
+				reader.onload = function(e){
+					var fileToEncrypt =  new Uint8Array(e.target.result);
+					var options = {
+						data: fileToEncrypt,
+						publicKeys: openpgp.key.readArmored(publicKey).keys,
+						armor: false // Don't ASCII-armor, just keep it as a binary blob
+					};
+					openpgp.encrypt(options).then(ciphertext => {
+						encrypted = ciphertext.message.packets.write(); //Uint8Array
+						var blob = new Blob([encrypted], {type: "application/octet-binary;charset=utf-8"});
+						var url = URL.createObjectURL(blob);
+						a.attr('href', url);
+						a.attr('download', file.name + ".gpg");
+						step(4);
+					}).catch(error => {
+						alert("Error: Bad key entered.");
+						console.log(error);
+					})
 				}
-
-				a.attr('href', decrypted);
-				a.attr('download', file.name.replace('.encrypted',''));
-
-				step(4);
-			};
-			reader.readAsText(file);
+				// Read file and trigger reader.onload()
+				reader.readAsArrayBuffer(file);
+			}
+			// GPG: Decrypt
+			else if(body.hasClass('decrypt')){
+				var privateKey = $('#step3 textarea.private-key').val();
+				const privateKeyObj = openpgp.key.readArmored(privateKey).keys[0];
+				var keyPassphrase = $('#step3 input.passphrase').val();
+				reader.onload = function(e){
+					var fileToDecrypt = new Uint8Array(e.target.result);
+					console.log(openpgp.message.fromBinary(fileToDecrypt));
+					var options = {
+						message: openpgp.message.fromBinary(fileToDecrypt),
+						privateKeys: [privateKeyObj],
+						armor: false // Don't ASCII-armor, just keep it as a binary blob
+					};
+					privateKeyObj.decrypt(keyPassphrase).then(something => {;
+					openpgp.decrypt(options)}).then(plaintext => {
+						console.log(plaintext);
+						decrypted = plaintext.message.packets.write(); //Uint8Array
+						var blob = new Blob([decrypted], {type: "application/octet-binary;charset=utf-8"});
+						var url = URL.createObjectURL(blob);
+						a.attr('href', url);
+						a.attr('download', file.name + ".decrypted");
+						step(4);
+					}).catch(error => {
+						alert("Error: Bad key/passphrase combination.");
+						console.log(error);
+					})
+				}
+				// Read file and trigger reader.onload()
+				reader.readAsArrayBuffer(file);
+			}
 		}
+
 	});
 
 

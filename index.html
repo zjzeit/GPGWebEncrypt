@@ -16,31 +16,50 @@
 				<div class="content">
 					<h1>What do you want to do?</h1>
 					<a class="button encrypt gpg green">Encrypt via GPG</a>
-					<a class="button encrypt aes green">Encrypt via AES</a><br/>
+					<!--a class="button encrypt aes green">Encrypt via AES</a><br/-->
 					<a class="button decrypt gpg magenta">Decrypt via GPG</a>
-					<a class="button decrypt aes magenta">Decrypt via AES</a>
+					<!--a class="button decrypt aes magenta">Decrypt via AES</a-->
 				</div>
 			</div>
 			<div id="step2">
-				<div class="content if-encrypt">
+				<div class="content">
 					<h1>Choose a file</h1>
-					<h2>An encrypted copy of the file will be generated. No data is sent to our server.</h2>
+					<h2>This file is used by your browser. No data is sent to our server.</h2>
 					<a class="button browse blue">Browse</a>
-
 					<input type="file" id="file-input" />
 				</div>
 			</div>
 			<div id="step3">
-				<div class="content if-encrypt">
-					<h1>Enter a pass phrase</h1>
-					<h2>This phrase will be used as an encryption key. Write it down or remember it; you won't be able to restore the file without it. </h2>
+				<div class="content if-encrypt-aes">
+					<h1>Not yet implemented</h1>
+					<!--h1>Enter a pass phrase</h1>
+					<h2>This is used as an encryption key. You will not be able to restore the file without it.</h2>
 					<input type="password" />
+					<a class="button process red">Encrypt!</a-->
+				</div>
+				<div class="content if-encrypt-gpg">
+					<h1>Enter the GPG Public Key</h1>
+					<h2>The public key is used to encrypt. You will need the matching private key to restore the file.</h2>
+					<textarea class="public-key">-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+-----END PGP PUBLIC KEY BLOCK-----</textarea><br/>
 					<a class="button process red">Encrypt!</a>
 				</div>
-				<div class="content if-decrypt">
-					<h1>Enter the pass phrase</h1>
+				<div class="content if-decrypt-aes">
+					<h1>Not yet implemented</h1>
+					<!--h1>Enter the pass phrase</h1>
 					<h2>Enter the pass phrase that was used to encrypt this file. It is not possible to decrypt it without it.</h2>
 					<input type="password" />
+					<a class="button process red">Decrypt!</a-->
+				</div>
+				<div class="content if-decrypt-gpg">
+					<h1>Enter the GPG Private Key</h1>
+					<h2>The private key is used to decrypt. This is used locally by your browser and should not leave your computer.</h2>
+					<textarea class="private-key">-----BEGIN PGP PRIVATE KEY BLOCK-----
+
+-----END PGP PUBLIC KEY BLOCK-----</textarea><br/>
+					<span>Key Passphrase</span><input type="password" class="passphrase"/>
+					<h3>Note: Decryption should be done via the command line using trusted utilities, and not this web-based program. This utility is provided solely for convenience and should be verified.<h3>
 					<a class="button process red">Decrypt!</a>
 				</div>
 			</div>
