@@ -144,8 +144,6 @@ $(function(){
 					};
 					openpgp.encrypt(options).then(ciphertext => {
 						encrypted = ciphertext.message.packets.write(); //Uint8Array
-						console.log(ciphertext);
-						console.log(encrypted);
 						var blob = new Blob([encrypted], {type: "application/octet-binary;charset=utf-8"});
 						var url = URL.createObjectURL(blob);
 						a.attr('href', url);
@@ -167,34 +165,25 @@ $(function(){
 				
 				reader.onload = function(e){
 					var fileToDecrypt = new Uint8Array(e.target.result);
-					//var fileToDecrypt = e.target.result;
-					console.log(e);
+					console.log(openpgp.message.fromBinary(fileToDecrypt));
 					var options = {
-						//message: openpgp.message.fromBinary(fileToDecrypt),
-						message: openpgp.message.read(fileToDecrypt),
+						message: openpgp.message.fromBinary(fileToDecrypt),
 						privateKeys: [privateKeyObj],
-						//sessionKeys: [privateKeyObj],
-						format: 'binary', // output result as Uint8Array
 						armor: false // Don't ASCII-armor, just keep it as a binary blob
 					};
-					
-					openpgp.decryptKey({
-						privateKey: privateKeyObj,
-						passphrase: keyPassphrase
-					}).then(function(){
-						openpgp.decrypt(options).then(plaintext => {
-							console.log(plaintext);
-							//decrypted = plaintext.message.packets.write(); //Uint8Array
-							var blob = new Blob([plaintext.data], {type: "application/octet-binary;charset=utf-8"});
-							var url = URL.createObjectURL(blob);
-							a.attr('href', url);
-							a.attr('download', file.name + ".decrypted");
-							step(4);
-						})
+					privateKeyObj.decrypt(keyPassphrase).then(something => {;
+					openpgp.decrypt(options)}).then(plaintext => {
+						console.log(plaintext);
+						decrypted = plaintext.message.packets.write(); //Uint8Array
+						var blob = new Blob([decrypted], {type: "application/octet-binary;charset=utf-8"});
+						var url = URL.createObjectURL(blob);
+						a.attr('href', url);
+						a.attr('download', file.name + ".decrypted");
+						step(4);
 					}).catch(error => {
+						alert("Error: Bad key/passphrase combination.");
 						console.log(error);
-					});
-
+					})
 				}
 				// Read file and trigger reader.onload()
 				reader.readAsArrayBuffer(file);
